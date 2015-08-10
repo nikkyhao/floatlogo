@@ -5,72 +5,67 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
-    private WindowManager windowManager = null;
-    private WindowManager.LayoutParams windowManagerParams = null;
-    private FloatView floatView = null;
+	private WindowManager windowManager = null;
+	private WindowManager.LayoutParams windowManagerParams = null;
+	private FloatView floatView = null;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-	requestWindowFeature(Window.FEATURE_NO_TITLE);// È¡Ïû±êÌâÀ¸
-	getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-		WindowManager.LayoutParams.FLAG_FULLSCREEN);// È«ÆÁ
-	setContentView(R.layout.activity_main);
-	createView();
-	
-	
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);// å–æ¶ˆæ ‡é¢˜æ 
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);// å…¨å±
+		setContentView(R.layout.activity_main);
+		createView();
+	}
 
+	public void onDestroy() {
+		super.onDestroy();
+		// åœ¨ç¨‹åºé€€å‡º(Activityé”€æ¯ï¼‰æ—¶é”€æ¯æ‚¬æµ®çª—å£
+		windowManager.removeView(floatView);
+	}
 
-    public void onDestroy() {
-	super.onDestroy();
-	// ÔÚ³ÌĞòÍË³ö(ActivityÏú»Ù£©Ê±Ïú»ÙĞü¸¡´°¿Ú
-	windowManager.removeView(floatView);
-    }
+	private void createView() {
+		floatView = new FloatView(getApplicationContext());
+		floatView.setOnClickListener(this);
+		// è·å–WindowManager
+		windowManager = (WindowManager) getApplicationContext()
+				.getSystemService(Context.WINDOW_SERVICE);
+		// è®¾ç½®LayoutParams(å…¨å±€å˜é‡ï¼‰ç›¸å…³å‚æ•°
+		windowManagerParams = ((FloatApplication) getApplication())
+				.getWindowParams();
+		windowManagerParams.type = LayoutParams.TYPE_PHONE; // è®¾ç½®window type(ç¡®å®šæ‚¬æµ®çª—ä½ç½®ï¼‰
+		windowManagerParams.format = PixelFormat.RGBA_8888; // è®¾ç½®å›¾ç‰‡æ ¼å¼ï¼Œæ•ˆæœä¸ºèƒŒæ™¯é€æ˜
+		// è®¾ç½®Window flag
+		windowManagerParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+				| LayoutParams.FLAG_NOT_FOCUSABLE;
+		/*
+		 * æ³¨æ„ï¼Œflagçš„å€¼å¯ä»¥ä¸ºï¼š LayoutParams.FLAG_NOT_TOUCH_MODAL ä¸å½±å“åé¢çš„äº‹ä»¶
+		 * LayoutParams.FLAG_NOT_FOCUSABLE ä¸å¯èšç„¦ LayoutParams.FLAG_NOT_TOUCHABLE
+		 * ä¸å¯è§¦æ‘¸
+		 */
+		// è°ƒæ•´æ‚¬æµ®çª—å£è‡³å·¦ä¸Šè§’ï¼Œä¾¿äºè°ƒæ•´åæ ‡
+		windowManagerParams.gravity = Gravity.LEFT | Gravity.TOP;
+		// ä»¥å±å¹•å·¦ä¸Šè§’ä¸ºåŸç‚¹ï¼Œè®¾ç½®xã€yåˆå§‹å€¼
+		windowManagerParams.x = 100;
+		windowManagerParams.y = 100;
+		// è®¾ç½®æ‚¬æµ®çª—å£é•¿å®½æ•°æ®
+		windowManagerParams.width = LayoutParams.WRAP_CONTENT;
+		windowManagerParams.height = LayoutParams.WRAP_CONTENT;
+		// æ˜¾ç¤ºmyFloatViewå›¾åƒ
+		windowManager.addView(floatView, windowManagerParams);
+	}
 
-    private void createView() {
-	floatView = new FloatView(getApplicationContext());
-	floatView.setOnClickListener(this);
-	floatView.setImageResource(R.drawable.ic_launcher); // ÕâÀï¼òµ¥µÄÓÃ×Ô´øµÄiconÀ´×öÑİÊ¾
-	// »ñÈ¡WindowManager
-	windowManager = (WindowManager) getApplicationContext()
-		.getSystemService(Context.WINDOW_SERVICE);
-	// ÉèÖÃLayoutParams(È«¾Ö±äÁ¿£©Ïà¹Ø²ÎÊı
-	windowManagerParams = ((FloatApplication) getApplication())
-		.getWindowParams();
-	windowManagerParams.type = LayoutParams.TYPE_PHONE; // ÉèÖÃwindow type
-	windowManagerParams.format = PixelFormat.RGBA_8888; // ÉèÖÃÍ¼Æ¬¸ñÊ½£¬Ğ§¹ûÎª±³¾°Í¸Ã÷
-	// ÉèÖÃWindow flag
-	windowManagerParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
-		| LayoutParams.FLAG_NOT_FOCUSABLE;
-	/*
-	 * ×¢Òâ£¬flagµÄÖµ¿ÉÒÔÎª£º LayoutParams.FLAG_NOT_TOUCH_MODAL ²»Ó°ÏìºóÃæµÄÊÂ¼ş
-	 * LayoutParams.FLAG_NOT_FOCUSABLE ²»¿É¾Û½¹ LayoutParams.FLAG_NOT_TOUCHABLE
-	 * ²»¿É´¥Ãş
-	 */
-	// µ÷ÕûĞü¸¡´°¿ÚÖÁ×óÉÏ½Ç£¬±ãÓÚµ÷Õû×ø±ê
-	windowManagerParams.gravity = Gravity.LEFT | Gravity.TOP;
-	// ÒÔÆÁÄ»×óÉÏ½ÇÎªÔ­µã£¬ÉèÖÃx¡¢y³õÊ¼Öµ
-	windowManagerParams.x = 0;
-	windowManagerParams.y = 0;
-	// ÉèÖÃĞü¸¡´°¿Ú³¤¿íÊı¾İ
-	windowManagerParams.width = LayoutParams.WRAP_CONTENT;
-	windowManagerParams.height = LayoutParams.WRAP_CONTENT;
-	// ÏÔÊ¾myFloatViewÍ¼Ïñ
-	windowManager.addView(floatView, windowManagerParams);
-    }
-
-    public void onClick(View v) {
-	Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show();
-	Toast.makeText(this, floatView.getHeight()+" "+floatView.getWidth(), Toast.LENGTH_SHORT).show();
-    }
+	public void onClick(View v) {
+		Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show();
+	}
 }
